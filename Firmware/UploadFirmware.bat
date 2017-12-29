@@ -1,0 +1,1 @@
+"%USERPROFILE%\Documents\ArduinoData\packages\Seeeduino\tools\stm32_dfu_upload_tool\1.0.0\win\dfu_upload.bat" 0 0483:df11 "%~dp0..\..\TinyCLR-Ports\Build\release\WioLTE\WioLTE Firmware.bin" 0x8000000 

@@ -1,0 +1,18 @@
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Directory>DeviceCode\Targets\Native\Interop\LedBlink</Directory>
+    <AssemblyName>LedBlink</AssemblyName>
+  </PropertyGroup>
+  <Import Project="$(SPOCLIENT)\tools\targets\Microsoft.SPOT.System.Settings" />
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+<ItemGroup>
+<HFile Include="LedBlink.h" />
+<Compile Include="LedBlink.cpp" />
+<Compile Include="LedBlink_LedBlink_WioLTE_mshl.cpp" />
+<HFile Include="LedBlink_LedBlink_WioLTE.h" />
+<Compile Include="LedBlink_LedBlink_WioLTE.cpp" />
+</ItemGroup>
+<Import Project="$(SPOCLIENT)\tools\targets\Microsoft.SPOT.System.Targets" />
+</Project>

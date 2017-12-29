@@ -1,0 +1,7 @@
+﻿/.vs
+/Projects/LedBlink/.vs
+/Projects/LedBlink/*.user
+/Projects/LedBlink/packages
+/Projects/LedBlink/obj
+/Projects/LedBlink/bin
+/Projects/LedBlink/Properties/Resources.Designer.cs
