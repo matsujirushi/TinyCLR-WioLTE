@@ -19,62 +19,63 @@ LOAD c:/program files (x86)/gnu tools arm embedded/6 2017-q2-update/bin/../lib/g
 END GROUP
                 0x00000000                . = ALIGN (0x4)
 
-.text           0x2001bc00       0xd4
+.text           0x2001bc00       0xf0
  *(.text)
  .text          0x2001bc00        0x0 LedBlink.obj
- .text          0x2001bc00       0xd4 LedBlink_LedBlink_WioLTE.obj
-                0x2001bc44                Interop_LedBlink_LedBlink_WioLTE::LedSetRGB___VOID__U1__U1__U1(TinyCLR_Interop_MethodData)
+ .text          0x2001bc00       0xf0 LedBlink_LedBlink_WioLTE.obj
+                0x2001bc44                Interop_LedBlink_LedBlink_WioLTE::Init___VOID(TinyCLR_Interop_MethodData)
+                0x2001bc84                Interop_LedBlink_LedBlink_WioLTE::LedSetRGB___VOID__U1__U1__U1(TinyCLR_Interop_MethodData)
 
-.glue_7         0x2001bcd4        0x0
- .glue_7        0x2001bcd4        0x0 linker stubs
+.glue_7         0x2001bcf0        0x0
+ .glue_7        0x2001bcf0        0x0 linker stubs
 
-.glue_7t        0x2001bcd4        0x0
- .glue_7t       0x2001bcd4        0x0 linker stubs
+.glue_7t        0x2001bcf0        0x0
+ .glue_7t       0x2001bcf0        0x0 linker stubs
 
-.vfp11_veneer   0x2001bcd4        0x0
- .vfp11_veneer  0x2001bcd4        0x0 linker stubs
+.vfp11_veneer   0x2001bcf0        0x0
+ .vfp11_veneer  0x2001bcf0        0x0 linker stubs
 
-.v4_bx          0x2001bcd4        0x0
- .v4_bx         0x2001bcd4        0x0 linker stubs
+.v4_bx          0x2001bcf0        0x0
+ .v4_bx         0x2001bcf0        0x0 linker stubs
 
-.iplt           0x2001bcd4        0x0
- .iplt          0x2001bcd4        0x0 LedBlink.obj
+.iplt           0x2001bcf0        0x0
+ .iplt          0x2001bcf0        0x0 LedBlink.obj
 
-i.IDelayLoop    0x2001bcd4        0x8
- i.IDelayLoop   0x2001bcd4        0x8 LedBlink_LedBlink_WioLTE.obj
-                0x2001bcd4                IDelayLoop
+i.IDelayLoop    0x2001bcf0        0x8
+ i.IDelayLoop   0x2001bcf0        0x8 LedBlink_LedBlink_WioLTE.obj
+                0x2001bcf0                IDelayLoop
 
 .rodata
  *(.rodata)
 
-.rodata.str1.1  0x2001bcdc        0x9
+.rodata.str1.1  0x2001bcf8        0x9
  .rodata.str1.1
-                0x2001bcdc        0x9 LedBlink.obj
+                0x2001bcf8        0x9 LedBlink.obj
 
 .rel.dyn        0x00000000        0x0
  .rel.iplt      0x00000000        0x0 LedBlink.obj
 
-.data           0x2001bce8        0x0
+.data           0x2001bd04        0x0
  *(.data)
- .data          0x2001bce8        0x0 LedBlink.obj
- .data          0x2001bce8        0x0 LedBlink_LedBlink_WioLTE.obj
+ .data          0x2001bd04        0x0 LedBlink.obj
+ .data          0x2001bd04        0x0 LedBlink_LedBlink_WioLTE.obj
 
-.data.rel.ro    0x2001bce8       0x1c
- .data.rel.ro   0x2001bce8       0x1c LedBlink.obj
+.data.rel.ro    0x2001bd04       0x24
+ .data.rel.ro   0x2001bd04       0x24 LedBlink.obj
 
 .data.rel.ro.local
-                0x2001bd04        0xc
+                0x2001bd28        0xc
  .data.rel.ro.local
-                0x2001bd04        0xc LedBlink.obj
-                0x2001bd04                Interop_LedBlink
+                0x2001bd28        0xc LedBlink.obj
+                0x2001bd28                Interop_LedBlink
 
-.igot.plt       0x2001bd10        0x0
- .igot.plt      0x2001bd10        0x0 LedBlink.obj
+.igot.plt       0x2001bd34        0x0
+ .igot.plt      0x2001bd34        0x0 LedBlink.obj
 
-.bss            0x2001bd10        0x0
+.bss            0x2001bd34        0x0
  *(.bss)
- .bss           0x2001bd10        0x0 LedBlink.obj
- .bss           0x2001bd10        0x0 LedBlink_LedBlink_WioLTE.obj
+ .bss           0x2001bd34        0x0 LedBlink.obj
+ .bss           0x2001bd34        0x0 LedBlink_LedBlink_WioLTE.obj
 OUTPUT(LedBlink.elf elf32-littlearm)
 
 .comment        0x00000000       0x7f

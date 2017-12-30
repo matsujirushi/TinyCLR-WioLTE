@@ -5,6 +5,9 @@ namespace LedBlink
     class WioLTE
     {
         [MethodImpl(MethodImplOptions.InternalCall)]
+        public extern void Init();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         public extern void LedSetRGB(byte red, byte green, byte blue);
     }
 }

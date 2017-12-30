@@ -7,6 +7,7 @@ struct Interop_LedBlink_LedBlink_Properties_Resources {
 };
 
 struct Interop_LedBlink_LedBlink_WioLTE {
+    static TinyCLR_Result Init___VOID(const TinyCLR_Interop_MethodData md);
     static TinyCLR_Result LedSetRGB___VOID__U1__U1__U1(const TinyCLR_Interop_MethodData md);
 };
 

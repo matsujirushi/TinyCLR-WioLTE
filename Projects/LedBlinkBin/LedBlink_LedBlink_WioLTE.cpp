@@ -131,6 +131,19 @@ static void SK6812SetSingleLED(int32_t pin, uint8_t r, uint8_t g, uint8_t b)
 #define RGB_LED_PWR_PIN	(8)
 #define RGB_LED_PIN		(17)
 
+TinyCLR_Result Interop_LedBlink_LedBlink_WioLTE::Init___VOID(const TinyCLR_Interop_MethodData md)
+{
+	// RGB_LED_PWR_PIN
+	GpioSetDirection(RGB_LED_PWR_PIN, GPIO_DIRECTION_OUTPUT);
+	GpioSetOutput(RGB_LED_PWR_PIN, true);
+
+	// RGB_LED_PIN
+	GpioSetDirection(RGB_LED_PIN, GPIO_DIRECTION_OUTPUT);
+	GpioSetOutput(RGB_LED_PIN, false);
+
+	return TinyCLR_Result::Success;
+}
+
 TinyCLR_Result Interop_LedBlink_LedBlink_WioLTE::LedSetRGB___VOID__U1__U1__U1(const TinyCLR_Interop_MethodData md)
 {
 	auto ip = (const TinyCLR_Interop_Provider*)md.ApiProvider.FindDefault(&md.ApiProvider, TinyCLR_Api_Type::InteropProvider);
@@ -141,12 +154,6 @@ TinyCLR_Result Interop_LedBlink_LedBlink_WioLTE::LedSetRGB___VOID__U1__U1__U1(co
 	ip->GetArgument(ip, md.Stack, 2, g);
 	ip->GetArgument(ip, md.Stack, 3, b);
 
-	// RGB_LED_PWR_PIN
-	GpioSetDirection(RGB_LED_PWR_PIN, GPIO_DIRECTION_OUTPUT);
-	GpioSetOutput(RGB_LED_PWR_PIN, true);
-
-	// RGB_LED_PIN
-	GpioSetDirection(RGB_LED_PIN, GPIO_DIRECTION_OUTPUT);
 	SK6812Reset(RGB_LED_PIN);
 	SK6812SetSingleLED(RGB_LED_PIN, r.Data.Numeric->U1, g.Data.Numeric->U1, b.Data.Numeric->U1);
 
