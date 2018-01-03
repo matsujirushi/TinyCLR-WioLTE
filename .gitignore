@@ -15,3 +15,13 @@
 /Projects/LedBlink2/packages
 /Projects/LedBlink2/obj
 /Projects/LedBlink2/bin
+/Libraries/Seeed.TinyCLR.WioLTE/.vs
+/Libraries/Seeed.TinyCLR.WioLTE/*.user
+/Libraries/Seeed.TinyCLR.WioLTE/packages
+/Libraries/Seeed.TinyCLR.WioLTE/obj
+/Libraries/Seeed.TinyCLR.WioLTE/bin
+/Projects/LedBlink3/.vs
+/Projects/LedBlink3/*.user
+/Projects/LedBlink3/packages
+/Projects/LedBlink3/obj
+/Projects/LedBlink3/bin
