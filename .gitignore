@@ -25,3 +25,8 @@
 /Projects/LedBlink3/packages
 /Projects/LedBlink3/obj
 /Projects/LedBlink3/bin
+/Projects/SampleApp/.vs
+/Projects/SampleApp/*.user
+/Projects/SampleApp/packages
+/Projects/SampleApp/obj
+/Projects/SampleApp/bin
