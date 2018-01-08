@@ -1,8 +1,5 @@
 ﻿using Seeed.TinyCLR.WioLTE;
-using System;
-using System.Collections;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 
 namespace SampleApp
