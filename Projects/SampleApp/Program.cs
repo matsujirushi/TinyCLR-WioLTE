@@ -20,7 +20,7 @@ namespace SampleApp
 
             Debug.WriteLine("### Power supply ON.");
             Wio.PowerSupplyLTE(true);
-            Thread.Sleep(5000);
+            Thread.Sleep(500);
 
             Debug.WriteLine("### Turn on or reset.");
             Wio.TurnOnOrReset();

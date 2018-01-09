@@ -7,7 +7,7 @@ namespace Seeed.TinyCLR.WioLTE
 {
     public class WioLTE : IDisposable
     {
-        private InteropWioLTE _Interop;
+        private WioLTENative _Native;
 
         private GpioPin _ModulePwrPin;
         private GpioPin _AntPwrPin;
@@ -43,9 +43,9 @@ namespace Seeed.TinyCLR.WioLTE
         public WioLTE()
         {
             #region Find original interop code.
-            var api = Api.Find("Seeed.TinyCLR.NativeApis.WioLTE.WioLTE", ApiType.Custom);
+            var api = Api.Find("Seeed.TinyCLR.WioLTE.Interop", ApiType.Custom);
             Interop.Add(api.Implementation[0]);
-            _Interop = new InteropWioLTE();
+            _Native = new WioLTENative();
             #endregion
 
             var controller = GpioController.GetDefault();
@@ -137,12 +137,12 @@ namespace Seeed.TinyCLR.WioLTE
 
         public void Init()
         {
-            _Interop.Init();
+            _Native.Init();
         }
 
         public void LedSetRGB(byte r, byte g, byte b)
         {
-            _Interop.LedSetRGB(r, g, b);
+            _Native.LedSetRGB(r, g, b);
         }
 
         public void PowerSupplyLTE(bool on)

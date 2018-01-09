@@ -43,9 +43,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Seeed.TinyCLR.WioLTE">
-      <HintPath>..\..\Libraries\Seeed.TinyCLR.WioLTE\bin\Debug\Seeed.TinyCLR.WioLTE.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\Libraries\Seeed.TinyCLR.WioLTE\Seeed.TinyCLR.WioLTE.csproj">
+      <Project>{2189AE77-CAD1-4170-B894-76727AD1AFDD}</Project>
+      <Name>Seeed.TinyCLR.WioLTE</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -2,7 +2,7 @@
 
 namespace Seeed.TinyCLR.WioLTE
 {
-    internal class InteropWioLTE
+    internal class WioLTENative
     {
         [MethodImpl(MethodImplOptions.InternalCall)]
         public extern void Init();
