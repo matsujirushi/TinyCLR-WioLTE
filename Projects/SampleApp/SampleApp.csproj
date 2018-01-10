@@ -43,10 +43,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\Seeed.TinyCLR.WioLTE\Seeed.TinyCLR.WioLTE.csproj">
-      <Project>{2189AE77-CAD1-4170-B894-76727AD1AFDD}</Project>
-      <Name>Seeed.TinyCLR.WioLTE</Name>
-    </ProjectReference>
+    <Reference Include="GHIElectronics.TinyCLR.Devices, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.0.7.0\lib\net452\GHIElectronics.TinyCLR.Devices.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Pins, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Pins.0.7.0\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Storage, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Storage.0.7.0\lib\net452\GHIElectronics.TinyCLR.Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="Seeed.TinyCLR.WioLTE">
+      <HintPath>..\..\Libraries\Seeed.TinyCLR.WioLTE\bin\Debug\Seeed.TinyCLR.WioLTE.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
