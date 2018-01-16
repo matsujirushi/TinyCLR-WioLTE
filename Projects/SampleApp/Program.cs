@@ -13,6 +13,11 @@ namespace SampleApp
     {
         static void Main()
         {
+            var serial = SerialDevice.FromId(STM32F4.UartPort.Usart2);
+            serial.BaudRate = 115200;
+            serial.ReadTimeout = TimeSpan.Zero;
+            var atSerial = new AtSerial(serial);
+
             var Wio = new WioLTE();
 
             Thread.Sleep(200);
@@ -27,26 +32,36 @@ namespace SampleApp
             Wio.PowerSupplyLTE(true);
             Thread.Sleep(500);
 
+            #region TurnOnOrReset
+
+            #region TurnOn
+
             Debug.WriteLine("### Turn on or reset.");
             Wio.TurnOnOrReset();
 
-            SerialDevice ser = SerialDevice.FromId(STM32F4.UartPort.Usart2);
-            ser.BaudRate = 115200;
-            ser.ReadTimeout = TimeSpan.Zero;
-            var serReader = new DataReader(ser.InputStream);
-            var serWriter = new DataWriter(ser.OutputStream);
-
-            while (true)
+            var sw = new Stopwatch();
+            sw.Restart();
+            while (atSerial.WaitForResponse("RDY", 100, 10) == null)
             {
-                var i = serReader.Load(1);
-                if (i > 0)
-                {
-                    byte b = serReader.ReadByte();
-                    Debug.WriteLine("Recieved: " + b + ":" + new string(Encoding.UTF8.GetChars(new byte[] { b })));
-                }
-
-                Thread.Sleep(10);
+                if (sw.ElapsedMilliseconds >= 10000) throw new ApplicationException();
             }
+
+            #endregion
+
+            sw.Restart();
+            while (atSerial.WriteCommandAndWaitForResponse("AT", "OK", 500, 10) == null)
+            {
+                if (sw.ElapsedMilliseconds >= 10000) throw new ApplicationException();
+            }
+
+            if (atSerial.WriteCommandAndWaitForResponse("ATE0", "OK", 500, 10) == null) throw new ApplicationException();
+            if (atSerial.WriteCommandAndWaitForResponse("AT+QURCCFG=\"urcport\",\"uart1\"", "OK", 500, 10) == null) throw new ApplicationException();
+
+            // TODO
+
+            #endregion
+
+            Debug.WriteLine("### Finish.");
         }
     }
 }
