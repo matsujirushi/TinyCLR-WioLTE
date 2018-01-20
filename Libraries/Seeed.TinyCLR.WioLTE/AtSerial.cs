@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Seeed.TinyCLR.WioLTE
 {
-    public class AtSerial
+    internal class AtSerial
     {
         private const byte CHAR_CR = 0x0d;
         private const byte CHAR_LF = 0x0a;
@@ -118,7 +118,7 @@ namespace Seeed.TinyCLR.WioLTE
                 // responsePattern?
                 if (responsePattern != null)
                 {
-                    if (response == responsePattern)
+                    if (WioLTENative.slre_match(responsePattern, response) >= 0)
                     {
                         Debug.WriteLine($"-> {response}");
                         return response;

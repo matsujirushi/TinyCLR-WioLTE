@@ -34,6 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AtSerial.cs" />
+    <Compile Include="Stopwatch.cs" />
     <Compile Include="WioLTENative.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WioLTE.cs" />
@@ -44,6 +46,12 @@
   <ItemGroup>
     <Reference Include="GHIElectronics.TinyCLR.Devices, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.0.7.0\lib\net452\GHIElectronics.TinyCLR.Devices.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Pins, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Projects\SampleApp\packages\GHIElectronics.TinyCLR.Pins.0.7.0\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Storage, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Projects\SampleApp\packages\GHIElectronics.TinyCLR.Storage.0.7.0\lib\net452\GHIElectronics.TinyCLR.Storage.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

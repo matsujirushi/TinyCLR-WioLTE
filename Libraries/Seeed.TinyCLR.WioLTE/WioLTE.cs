@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using GHIElectronics.TinyCLR.Devices.Gpio;
+using GHIElectronics.TinyCLR.Devices.SerialCommunication;
+using GHIElectronics.TinyCLR.Pins;
 
 namespace Seeed.TinyCLR.WioLTE
 {
@@ -20,6 +23,8 @@ namespace Seeed.TinyCLR.WioLTE
         private GpioPin _DtrPin;
         private GpioPin _WakeupInPin;
         private GpioPin _WDisablePin;
+
+        private AtSerial _Module;
 
         private static GpioPin NewGpioInputPin(GpioController controller, int pinNumber)
         {
@@ -71,6 +76,11 @@ namespace Seeed.TinyCLR.WioLTE
             _WakeupInPin = NewGpioOutputPin(controller, 32, GpioPinValue.Low);
             _WDisablePin = NewGpioOutputPin(controller, 34, GpioPinValue.High);
             //GpioPin _ApReadyPin = NewGpioOutputPin(controller, 33, GpioPinValue.Low);   // NOT use
+
+            var serial = SerialDevice.FromId(STM32F4.UartPort.Usart2);
+            serial.BaudRate = 115200;
+            serial.ReadTimeout = TimeSpan.Zero;
+            _Module = new AtSerial(serial);
         }
 
         public void Dispose()
@@ -124,13 +134,12 @@ namespace Seeed.TinyCLR.WioLTE
             //}
             //DEBUG_PRINTLN("");
 
-            //sw.Restart();
-            //while (_Module.WaitForResponse("^RDY$", 100, 10) == NULL)
-            //{
-            //    DEBUG_PRINT(".");
-            //    if (sw.ElapsedMilliseconds() >= 10000) return false;
-            //}
-            //DEBUG_PRINTLN("");
+            var sw = new Stopwatch();
+            sw.Restart();
+            while (_Module.WaitForResponse("^RDY$", 100, 10) == null)
+            {
+                if (sw.ElapsedMilliseconds >= 10000) return false;
+            }
 
             return true;
         }
@@ -170,6 +179,18 @@ namespace Seeed.TinyCLR.WioLTE
             {
                 if (!TurnOn()) throw new ApplicationException();
             }
+
+            var sw = new Stopwatch();
+            sw.Restart();
+            while (_Module.WriteCommandAndWaitForResponse("AT", "^OK$", 500, 10) == null)
+            {
+                if (sw.ElapsedMilliseconds >= 10000) throw new ApplicationException();
+            }
+
+            if (_Module.WriteCommandAndWaitForResponse("ATE0", "^OK$", 500, 10) == null) throw new ApplicationException();
+            if (_Module.WriteCommandAndWaitForResponse("AT+QURCCFG=\"urcport\",\"uart1\"", "^OK$", 500, 10) == null) throw new ApplicationException();
+
+            // TODO
         }
     }
 }

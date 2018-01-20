@@ -1,6 +1,6 @@
 ﻿namespace System.Diagnostics
 {
-    public class Stopwatch
+    internal class Stopwatch
     {
         private bool _Running;
         private DateTime _StartTime;
