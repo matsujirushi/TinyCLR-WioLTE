@@ -10,6 +10,8 @@ namespace Seeed.TinyCLR.WioLTE
 {
     public class WioLTE : IDisposable
     {
+        private const int POLLING_INTERVAL = 100;
+
         private WioLTENative _Native;
 
         private GpioPin _ModulePwrPin;
@@ -124,17 +126,14 @@ namespace Seeed.TinyCLR.WioLTE
             Thread.Sleep(200);
             _PwrKeyPin.Write(GpioPinValue.Low);
 
-            //Seeed::Stopwatch sw;
-            //sw.Restart();
-            //while (IsBusy())
-            //{
-            //    DEBUG_PRINT(".");
-            //    if (sw.ElapsedMilliseconds() >= 5000) return false;
-            //    wait_ms(100);
-            //}
-            //DEBUG_PRINTLN("");
-
             var sw = new Stopwatch();
+            sw.Restart();
+            while (IsBusy())
+            {
+                if (sw.ElapsedMilliseconds >= 5000) return false;
+                Thread.Sleep(100);
+            }
+
             sw.Restart();
             while (_Module.WaitForResponse("^RDY$", 100, 10) == null)
             {
@@ -189,8 +188,55 @@ namespace Seeed.TinyCLR.WioLTE
 
             if (_Module.WriteCommandAndWaitForResponse("ATE0", "^OK$", 500, 10) == null) throw new ApplicationException();
             if (_Module.WriteCommandAndWaitForResponse("AT+QURCCFG=\"urcport\",\"uart1\"", "^OK$", 500, 10) == null) throw new ApplicationException();
+            if (_Module.WriteCommandAndWaitForResponse("AT+QSCLK=1", "^(OK|ERROR)$", 500, 10) == null) throw new ApplicationException();
 
-            // TODO
+            sw.Restart();
+            while (true)
+            {
+                var response = _Module.WriteCommandAndWaitForResponse("AT+CPIN?", "^(OK|.CME ERROR: .*)$", 5000, 10);
+                if (response == null) throw new ApplicationException();
+                if (response == "OK") break;
+                if (sw.ElapsedMilliseconds >= 10000) throw new ApplicationException();
+                Thread.Sleep(POLLING_INTERVAL);
+            }
         }
+
+        public void Activate(string accessPointName, string userName, string password)
+        {
+            string response;
+            string[] parser;
+            int resultCode;
+            int status;
+
+
+            var sw = new Stopwatch();
+            sw.Restart();
+            while (true)
+            {
+                response = _Module.WriteCommandAndWaitForResponse("AT+CGREG?", "^\\+CGREG: ", 500, 10);
+                if (response == null) throw new ApplicationException();
+                parser = response.Substring(8).Split(',');
+                if (parser.Length < 2) throw new ApplicationException();
+                resultCode = int.Parse(parser[0]);
+                status = int.Parse(parser[1]);
+                if (_Module.WaitForResponse("^OK$", 500, 10) == null) throw new ApplicationException();
+                if (status == 0) throw new ApplicationException();
+                if (status == 1 || status == 5) break;
+
+                response = _Module.WriteCommandAndWaitForResponse("AT+CEREG?", "^\\+CEREG: ", 500, 10);
+                if (response == null) throw new ApplicationException();
+                parser = response.Substring(8).Split(',');
+                if (parser.Length < 2) throw new ApplicationException();
+                resultCode = int.Parse(parser[0]);
+                status = int.Parse(parser[1]);
+                if (_Module.WaitForResponse("^OK$", 500, 10) == null) throw new ApplicationException();
+                if (status == 0) throw new ApplicationException();
+                if (status == 1 || status == 5) break;
+
+                if (sw.ElapsedMilliseconds >= 120000) throw new ApplicationException();
+            }
+        }
+
+        // TODO
     }
 }

@@ -25,6 +25,8 @@ namespace SampleApp
             Debug.WriteLine("### Turn on or reset.");
             Wio.TurnOnOrReset();
 
+            Wio.Activate("soracom.io", "sora", "sora");
+
             Debug.WriteLine("### Finish.");
         }
     }
