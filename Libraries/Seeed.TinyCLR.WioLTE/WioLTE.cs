@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define WIOLTE_DEBUG
+
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -235,8 +237,64 @@ namespace Seeed.TinyCLR.WioLTE
 
                 if (sw.ElapsedMilliseconds >= 120000) throw new ApplicationException();
             }
+
+            // for debug.
+#if WIOLTE_DEBUG
+            _Module.WriteCommandAndWaitForResponse("AT+CREG?", "^OK$", 500, 10);
+            _Module.WriteCommandAndWaitForResponse("AT+CGREG?", "^OK$", 500, 10);
+            _Module.WriteCommandAndWaitForResponse("AT+CEREG?", "^OK$", 500, 10);
+#endif // WIOLTE_DEBUG
+
+            if (_Module.WriteCommandAndWaitForResponse($"AT+QICSGP=1,1,\"{accessPointName}\",\"{userName}\",\"{password}\",1", "^OK$", 500, 10) == null) throw new ApplicationException();
+
+            sw.Restart();
+            while (true)
+            {
+                response = _Module.WriteCommandAndWaitForResponse("AT+QIACT=1", "^(OK|ERROR)$", 150000, 10);
+                if (response == null) throw new ApplicationException();
+                if (response == "OK") break;
+                if (_Module.WriteCommandAndWaitForResponse("AT+QIGETERROR", "^OK$", 500, 10) == null) throw new ApplicationException();
+                if (sw.ElapsedMilliseconds >= 150000) throw new ApplicationException();
+                Thread.Sleep(POLLING_INTERVAL);
+            }
+
+            // for debug.
+#if WIOLTE_DEBUG
+            if (_Module.WriteCommandAndWaitForResponse("AT+QIACT?", "^OK$", 150000, 10) == null) throw new ApplicationException();
+#endif // WIOLTE_DEBUG
         }
 
-        // TODO
+        public int SocketOpen(string host, int port)    // TODO
+        {
+            if (host == null || host.Length <= 0) throw new ApplicationException();
+            if (port < 0 || 65535 < port) throw new ApplicationException();
+
+		    var typeStr = "UDP";
+	        int connectId = 0;
+
+            if (_Module.WriteCommandAndWaitForResponse($"AT+QIOPEN=1,{connectId},\"{typeStr}\",\"{host}\",{port}", "^OK$", 150000, 10) == null) throw new ApplicationException();
+            if (_Module.WaitForResponse($"^\\+QIOPEN: {connectId},0$", 150000, 10) == null) throw new ApplicationException();
+
+	        return connectId;
+        }
+
+        public void SocketSend(int connectId, byte[] data)  // TODO
+        {
+            if (data.Length > 1460) throw new ApplicationException();
+
+            _Module.WriteCommand($"AT+QISEND={connectId},{data.Length}");
+            //if (_Module.WaitForResponse(NULL, 500, "> ", ModuleSerial::WFR_WITHOUT_DELIM) == NULL) return RET_ERR(false, E_UNKNOWN);
+            try
+            {
+                _Module.WaitForResponse("> ", 1000, 10);
+            }
+            catch (ApplicationException)
+            {
+                // Nothing.
+            }
+            _Module.Write(data);
+            if (_Module.WaitForResponse("SEND OK", 5000, 10) == null) throw new ApplicationException();
+        }
+
     }
 }

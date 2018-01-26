@@ -97,6 +97,11 @@ namespace Seeed.TinyCLR.WioLTE
             _ReadedByteValid = false;
         }
 
+        public void Write(byte[] data)
+        {
+            SerialWrite(data);
+        }
+
         public void WriteCommand(string command)
         {
             Debug.WriteLine($"<- {command}");
