@@ -12,6 +12,12 @@ namespace Seeed.TinyCLR.WioLTE
 {
     public class WioLTE : IDisposable
     {
+        public enum SocketType
+        {
+            TCP,
+            UDP,
+        }
+
         private const int POLLING_INTERVAL = 100;
 
         private WioLTENative _Native;
@@ -109,14 +115,12 @@ namespace Seeed.TinyCLR.WioLTE
             _ResetModulePin.Write(GpioPinValue.High);
             Thread.Sleep(300);
 
-            //Seeed::Stopwatch sw;
-            //sw.Restart();
-            //while (_Module.WaitForResponse("^RDY$", 100, 10) == NULL)
-            //{
-            //    DEBUG_PRINT(".");
-            //    if (sw.ElapsedMilliseconds() >= 10000) return false;
-            //}
-            //DEBUG_PRINTLN("");
+            var sw = new Stopwatch();
+            sw.Restart();
+            while (_Module.WaitForResponse("^RDY$", 100, 10) == null)
+            {
+                if (sw.ElapsedMilliseconds >= 10000) return false;
+            }
 
             return true;
         }
@@ -264,13 +268,25 @@ namespace Seeed.TinyCLR.WioLTE
 #endif // WIOLTE_DEBUG
         }
 
-        public int SocketOpen(string host, int port)    // TODO
+        public int SocketOpen(string host, int port, SocketType type)
         {
             if (host == null || host.Length <= 0) throw new ApplicationException();
             if (port < 0 || 65535 < port) throw new ApplicationException();
 
-		    var typeStr = "UDP";
-	        int connectId = 0;
+            string typeStr;
+            switch (type)
+            {
+                case SocketType.TCP:
+                    typeStr = "TCP";
+                    break;
+                case SocketType.UDP:
+                    typeStr = "UDP";
+                    break;
+                default:
+                    throw new ApplicationException();
+            }
+
+	        int connectId = 0;  // TODO
 
             if (_Module.WriteCommandAndWaitForResponse($"AT+QIOPEN=1,{connectId},\"{typeStr}\",\"{host}\",{port}", "^OK$", 150000, 10) == null) throw new ApplicationException();
             if (_Module.WaitForResponse($"^\\+QIOPEN: {connectId},0$", 150000, 10) == null) throw new ApplicationException();
@@ -278,22 +294,22 @@ namespace Seeed.TinyCLR.WioLTE
 	        return connectId;
         }
 
-        public void SocketSend(int connectId, byte[] data)  // TODO
+        public void SocketSend(int connectId, byte[] data)
         {
+            // TODO
             if (data.Length > 1460) throw new ApplicationException();
 
             _Module.WriteCommand($"AT+QISEND={connectId},{data.Length}");
-            //if (_Module.WaitForResponse(NULL, 500, "> ", ModuleSerial::WFR_WITHOUT_DELIM) == NULL) return RET_ERR(false, E_UNKNOWN);
-            try
-            {
-                _Module.WaitForResponse("> ", 1000, 10);
-            }
-            catch (ApplicationException)
-            {
-                // Nothing.
-            }
+            if (_Module.WaitForResponse(new AtSerial.ResponseCompare[] { new AtSerial.ResponseCompare(AtSerial.ResponseCompareType.RegExWithoutDelim, "^> $"), }, 500, 10) == null) throw new ApplicationException();
             _Module.Write(data);
-            if (_Module.WaitForResponse("SEND OK", 5000, 10) == null) throw new ApplicationException();
+            if (_Module.WaitForResponse("^SEND OK$", 5000, 10) == null) throw new ApplicationException();
+        }
+
+        public void SocketClose(int connectId)
+        {
+            // TODO
+
+            if (_Module.WriteCommandAndWaitForResponse($"AT+QICLOSE={connectId}", "^OK$", 10000, 100) == null) throw new ApplicationException();
         }
 
     }

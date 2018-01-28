@@ -16,6 +16,25 @@ namespace Seeed.TinyCLR.WioLTE
         private bool _ReadedByteValid;
         private byte _ReadedByte;
 
+        public enum ResponseCompareType
+        {
+            RegEx,
+            RegExWithoutDelim,
+        }
+
+        public struct ResponseCompare
+        {
+            public ResponseCompareType Type;
+            public string Pattern;
+
+            public ResponseCompare(ResponseCompareType type, string pattern)
+            {
+                Type = type;
+                Pattern = pattern;
+            }
+
+        }
+
         #region Serial APIs
 
         private bool SerialAvailable()
@@ -64,7 +83,7 @@ namespace Seeed.TinyCLR.WioLTE
             return true;
         }
 
-        private string ReadResponse(int timeout)
+        private string ReadResponse(ResponseCompare[] responseCompare, int timeout)
         {
             var response = new StringBuilder();
 
@@ -84,6 +103,21 @@ namespace Seeed.TinyCLR.WioLTE
                 {
                     response.Remove(response.Length - 2, 2);
                     return response.ToString();
+                }
+
+                // Is match responseCompare?
+                foreach (var compare in responseCompare)
+                {
+                    switch (compare.Type)
+                    {
+                        //case ResponseCompareType.RegEx:
+                        case ResponseCompareType.RegExWithoutDelim:
+                            if (WioLTENative.slre_match(compare.Pattern, response.ToString()) >= 0)
+                            {
+                                return response.ToString();
+                            }
+                            break;
+                    }
                 }
             }
         }
@@ -110,7 +144,7 @@ namespace Seeed.TinyCLR.WioLTE
             SerialWrite(CHAR_CR);
         }
 
-        public string WaitForResponse(string responsePattern, int firstTimeout, int nextTimeout)
+        public string WaitForResponse(ResponseCompare[] responseCompare, int firstTimeout, int nextTimeout)
         {
             var sw = new Stopwatch();
             sw.Restart();
@@ -118,20 +152,31 @@ namespace Seeed.TinyCLR.WioLTE
             {
                 if (!WaitForAvailable(sw, firstTimeout)) return null;
 
-                var response = ReadResponse(nextTimeout);
+                var response = ReadResponse(responseCompare, nextTimeout);
 
-                // responsePattern?
-                if (responsePattern != null)
+                // Is match responseCompare?
+                foreach (var compare in responseCompare)
                 {
-                    if (WioLTENative.slre_match(responsePattern, response) >= 0)
+                    switch (compare.Type)
                     {
-                        Debug.WriteLine($"-> {response}");
-                        return response;
+                        case ResponseCompareType.RegEx:
+                        case ResponseCompareType.RegExWithoutDelim:
+                            if (WioLTENative.slre_match(compare.Pattern, response) >= 0)
+                            {
+                                Debug.WriteLine($"-> {response}");
+                                return response;
+                            }
+                            break;
                     }
                 }
 
                 Debug.WriteLine($"-> ({response})");
             }
+        }
+
+        public string WaitForResponse(string regEx, int firstTimeout, int nextTimeout)
+        {
+            return WaitForResponse(new ResponseCompare[] { new ResponseCompare(ResponseCompareType.RegEx, regEx), }, firstTimeout, nextTimeout);
         }
 
         public string WriteCommandAndWaitForResponse(string command, string responsePattern, int firstTimeout, int nextTimeout)

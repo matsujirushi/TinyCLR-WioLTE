@@ -1,4 +1,5 @@
 ﻿using Seeed.TinyCLR.WioLTE;
+using System;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
@@ -29,13 +30,23 @@ namespace SampleApp
             Debug.WriteLine("### Connecting to \"soracom.io\".");
             Wio.Activate("soracom.io", "sora", "sora");
 
-            Debug.WriteLine("### Open.");
-            var connectId = Wio.SocketOpen("harvest.soracom.io", 8514);
+            DateTime startTime = DateTime.Now;
+            while (true)
+            {
+                Debug.WriteLine("### Open.");
+                var connectId = Wio.SocketOpen("harvest.soracom.io", 8514, WioLTE.SocketType.UDP);
 
-            Debug.WriteLine("### Send.");
-            Wio.SocketSend(connectId, Encoding.UTF8.GetBytes("{\"uptime\":0}"));
+                Debug.WriteLine("### Send.");
+                Wio.SocketSend(connectId, Encoding.UTF8.GetBytes($"{{\"uptime\":{(DateTime.Now - startTime).TotalSeconds}}}"));
 
-            Debug.WriteLine("### Finish.");
+                Thread.Sleep(1000);
+
+                Debug.WriteLine("### Close.");
+                Wio.SocketClose(connectId);
+
+                Thread.Sleep(15000);
+            }
+
         }
     }
 }
