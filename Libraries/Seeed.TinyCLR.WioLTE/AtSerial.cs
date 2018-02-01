@@ -112,7 +112,7 @@ namespace Seeed.TinyCLR.WioLTE
                     {
                         //case ResponseCompareType.RegEx:
                         case ResponseCompareType.RegExWithoutDelim:
-                            if (WioLTENative.slre_match(compare.Pattern, response.ToString()) >= 0)
+                            if (WioLTENative.slre_match2(compare.Pattern, response.ToString()) != null)
                             {
                                 return response.ToString();
                             }
@@ -157,11 +157,12 @@ namespace Seeed.TinyCLR.WioLTE
                 // Is match responseCompare?
                 foreach (var compare in responseCompare)
                 {
+                    string cap;
                     switch (compare.Type)
                     {
                         case ResponseCompareType.RegEx:
                         case ResponseCompareType.RegExWithoutDelim:
-                            if (WioLTENative.slre_match(compare.Pattern, response) >= 0)
+                            if ((cap = WioLTENative.slre_match2(compare.Pattern, response)) != null)
                             {
                                 Debug.WriteLine($"-> {response}");
                                 return response;

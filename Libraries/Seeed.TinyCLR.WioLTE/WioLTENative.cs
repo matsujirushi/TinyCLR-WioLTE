@@ -6,6 +6,8 @@ namespace Seeed.TinyCLR.WioLTE
     {
         [MethodImpl(MethodImplOptions.InternalCall)]
         public static extern int slre_match(string regexp, string buf);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public static extern string slre_match2(string regexp, string buf);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         public extern void Init();
