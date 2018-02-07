@@ -117,7 +117,7 @@ namespace Seeed.TinyCLR.WioLTE
 
             var sw = new Stopwatch();
             sw.Restart();
-            while (_Module.WaitForResponse("^RDY$", 100, 10) == null)
+            while (_Module.WaitForResponse("^(RDY)$", 100, 10) == null)
             {
                 if (sw.ElapsedMilliseconds >= 10000) return false;
             }
@@ -141,7 +141,7 @@ namespace Seeed.TinyCLR.WioLTE
             }
 
             sw.Restart();
-            while (_Module.WaitForResponse("^RDY$", 100, 10) == null)
+            while (_Module.WaitForResponse("^(RDY)$", 100, 10) == null)
             {
                 if (sw.ElapsedMilliseconds >= 10000) return false;
             }
@@ -187,13 +187,13 @@ namespace Seeed.TinyCLR.WioLTE
 
             var sw = new Stopwatch();
             sw.Restart();
-            while (_Module.WriteCommandAndWaitForResponse("AT", "^OK$", 500, 10) == null)
+            while (_Module.WriteCommandAndWaitForResponse("AT", "^(OK)$", 500, 10) == null)
             {
                 if (sw.ElapsedMilliseconds >= 10000) throw new ApplicationException();
             }
 
-            if (_Module.WriteCommandAndWaitForResponse("ATE0", "^OK$", 500, 10) == null) throw new ApplicationException();
-            if (_Module.WriteCommandAndWaitForResponse("AT+QURCCFG=\"urcport\",\"uart1\"", "^OK$", 500, 10) == null) throw new ApplicationException();
+            if (_Module.WriteCommandAndWaitForResponse("ATE0", "^(OK)$", 500, 10) == null) throw new ApplicationException();
+            if (_Module.WriteCommandAndWaitForResponse("AT+QURCCFG=\"urcport\",\"uart1\"", "^(OK)$", 500, 10) == null) throw new ApplicationException();
             if (_Module.WriteCommandAndWaitForResponse("AT+QSCLK=1", "^(OK|ERROR)$", 500, 10) == null) throw new ApplicationException();
 
             sw.Restart();
@@ -225,7 +225,7 @@ namespace Seeed.TinyCLR.WioLTE
                 if (parser.Length < 2) throw new ApplicationException();
                 resultCode = int.Parse(parser[0]);
                 status = int.Parse(parser[1]);
-                if (_Module.WaitForResponse("^OK$", 500, 10) == null) throw new ApplicationException();
+                if (_Module.WaitForResponse("^(OK)$", 500, 10) == null) throw new ApplicationException();
                 if (status == 0) throw new ApplicationException();
                 if (status == 1 || status == 5) break;
 
@@ -235,7 +235,7 @@ namespace Seeed.TinyCLR.WioLTE
                 if (parser.Length < 2) throw new ApplicationException();
                 resultCode = int.Parse(parser[0]);
                 status = int.Parse(parser[1]);
-                if (_Module.WaitForResponse("^OK$", 500, 10) == null) throw new ApplicationException();
+                if (_Module.WaitForResponse("^(OK)$", 500, 10) == null) throw new ApplicationException();
                 if (status == 0) throw new ApplicationException();
                 if (status == 1 || status == 5) break;
 
@@ -244,12 +244,12 @@ namespace Seeed.TinyCLR.WioLTE
 
             // for debug.
 #if WIOLTE_DEBUG
-            _Module.WriteCommandAndWaitForResponse("AT+CREG?", "^OK$", 500, 10);
-            _Module.WriteCommandAndWaitForResponse("AT+CGREG?", "^OK$", 500, 10);
-            _Module.WriteCommandAndWaitForResponse("AT+CEREG?", "^OK$", 500, 10);
+            _Module.WriteCommandAndWaitForResponse("AT+CREG?", "^(OK)$", 500, 10);
+            _Module.WriteCommandAndWaitForResponse("AT+CGREG?", "^(OK)$", 500, 10);
+            _Module.WriteCommandAndWaitForResponse("AT+CEREG?", "^(OK)$", 500, 10);
 #endif // WIOLTE_DEBUG
 
-            if (_Module.WriteCommandAndWaitForResponse($"AT+QICSGP=1,1,\"{accessPointName}\",\"{userName}\",\"{password}\",1", "^OK$", 500, 10) == null) throw new ApplicationException();
+            if (_Module.WriteCommandAndWaitForResponse($"AT+QICSGP=1,1,\"{accessPointName}\",\"{userName}\",\"{password}\",1", "^(OK)$", 500, 10) == null) throw new ApplicationException();
 
             sw.Restart();
             while (true)
@@ -257,14 +257,14 @@ namespace Seeed.TinyCLR.WioLTE
                 response = _Module.WriteCommandAndWaitForResponse("AT+QIACT=1", "^(OK|ERROR)$", 150000, 10);
                 if (response == null) throw new ApplicationException();
                 if (response == "OK") break;
-                if (_Module.WriteCommandAndWaitForResponse("AT+QIGETERROR", "^OK$", 500, 10) == null) throw new ApplicationException();
+                if (_Module.WriteCommandAndWaitForResponse("AT+QIGETERROR", "^(OK)$", 500, 10) == null) throw new ApplicationException();
                 if (sw.ElapsedMilliseconds >= 150000) throw new ApplicationException();
                 Thread.Sleep(POLLING_INTERVAL);
             }
 
             // for debug.
 #if WIOLTE_DEBUG
-            if (_Module.WriteCommandAndWaitForResponse("AT+QIACT?", "^OK$", 150000, 10) == null) throw new ApplicationException();
+            if (_Module.WriteCommandAndWaitForResponse("AT+QIACT?", "^(OK)$", 150000, 10) == null) throw new ApplicationException();
 #endif // WIOLTE_DEBUG
         }
 
@@ -288,7 +288,7 @@ namespace Seeed.TinyCLR.WioLTE
 
 	        int connectId = 0;  // TODO
 
-            if (_Module.WriteCommandAndWaitForResponse($"AT+QIOPEN=1,{connectId},\"{typeStr}\",\"{host}\",{port}", "^OK$", 150000, 10) == null) throw new ApplicationException();
+            if (_Module.WriteCommandAndWaitForResponse($"AT+QIOPEN=1,{connectId},\"{typeStr}\",\"{host}\",{port}", "^(OK)$", 150000, 10) == null) throw new ApplicationException();
             if (_Module.WaitForResponse($"^\\+QIOPEN: {connectId},0$", 150000, 10) == null) throw new ApplicationException();
 
 	        return connectId;
@@ -302,14 +302,14 @@ namespace Seeed.TinyCLR.WioLTE
             _Module.WriteCommand($"AT+QISEND={connectId},{data.Length}");
             if (_Module.WaitForResponse(new AtSerial.ResponseCompare[] { new AtSerial.ResponseCompare(AtSerial.ResponseCompareType.RegExWithoutDelim, "^> $"), }, 500, 10) == null) throw new ApplicationException();
             _Module.Write(data);
-            if (_Module.WaitForResponse("^SEND OK$", 5000, 10) == null) throw new ApplicationException();
+            if (_Module.WaitForResponse("^(SEND OK)$", 5000, 10) == null) throw new ApplicationException();
         }
 
         public void SocketClose(int connectId)
         {
             // TODO
 
-            if (_Module.WriteCommandAndWaitForResponse($"AT+QICLOSE={connectId}", "^OK$", 10000, 100) == null) throw new ApplicationException();
+            if (_Module.WriteCommandAndWaitForResponse($"AT+QICLOSE={connectId}", "^(OK)$", 10000, 100) == null) throw new ApplicationException();
         }
 
     }
